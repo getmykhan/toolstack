@@ -37,7 +37,7 @@ def stopword_remove(df, column, lang='english', text_lower=True):
     column : string, int
         The column selected should be present in the Dataframe passed
     lang : string, default 'english'
-        Options: Lnaguages
+        Options: Languages
     text_lower : boolean, default True
         If False, then the stopwords will be removed without lowercasing the text
     
@@ -78,7 +78,8 @@ def punctuations(df, old_column , new_column, regex= r'[^\w\s]'):
     """
     df[new_column] = df[old_column].apply(lambda x: re.sub(regex,'',x))
 
-def count_word(df, column, sort= None):
+
+def count_word(df, column, sort='ascending', sw=None, lang='english'):
     """ 
     Take the count of unique words
 
@@ -88,21 +89,37 @@ def count_word(df, column, sort= None):
         The df to perform case operation on.
     column : string, int
         The column selected should be present in the Dataframe passed
-    sort : boolean, default None
-        Options: True, False
+    sort : string, default ascending
+        Options: ascending, descending
         If sorted, it will sort values by the count
+    stopwords : boolean, default None
+        Options: True, False
+        To remove the common stopwords
+    lang : string, default 'english'
+        Options: Languages 
     
     Returns
     -------
     Dataframe: columns:['Word', 'Count']
 
     """
-    word_counter = []
-    for x in np.array(df[column]):
-        x = x.split()
-        for word in x:
-            word_counter.append(word.lower())
-    k_v = Counter(word_counter)
+    if sw == True:
+        word_counter = []
+        for x in np.array(df[column]):
+            x = x.split()
+            for word in x:
+                if word.lower() not in set(stopwords.words(lang)):
+                    word_counter.append(word.lower())
+        k_v = Counter(word_counter)
+    
+    else:
+        word_counter = []
+        for x in np.array(df[column]):
+            x = x.split()
+            for word in x:
+                word_counter.append(word.lower())
+        k_v = Counter(word_counter)
+    
     if sort == 'ascending':
         return(pd.DataFrame({'Word':[x for x in k_v.keys()], 'Count': [x for x in k_v.values()]})).sort_values('Count')
     elif sort == 'descending':
