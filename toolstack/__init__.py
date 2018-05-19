@@ -1,3 +1,3 @@
-__version__ = '0.0.7'
+__version__ = '0.0.13'
 #import .toolstack
-#__all__ = ["toolstack"]
+__all__ = ["feature_encoding", "text_preprocessing"]

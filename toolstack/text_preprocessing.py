@@ -79,7 +79,7 @@ def punctuations(df, old_column , new_column, regex= r'[^\w\s]'):
     df[new_column] = df[old_column].apply(lambda x: re.sub(regex,'',x))
 
 
-def count_word(df, column, sort='ascending', sw=None, lang='english'):
+def count_word(df, column, sw=None, lang='english', sort='ascending'):
     """ 
     Take the count of unique words
 
@@ -89,14 +89,14 @@ def count_word(df, column, sort='ascending', sw=None, lang='english'):
         The df to perform case operation on.
     column : string, int
         The column selected should be present in the Dataframe passed
-    sort : string, default ascending
-        Options: ascending, descending
-        If sorted, it will sort values by the count
-    stopwords : boolean, default None
+    sw : boolean, default None
         Options: True, False
         To remove the common stopwords
     lang : string, default 'english'
-        Options: Languages 
+        Options: Languages
+    sort : string, default ascending
+        Options: ascending, descending
+        If sorted, it will sort values by the count 
     
     Returns
     -------
