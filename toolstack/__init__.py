@@ -1,4 +1,4 @@
-__version__ = '0.0.13'
+__version__ = '0.0.15'
 #import .toolstack
 ## Working version
-__all__ = ["feature_encoding", "text_preprocessing"]
+__all__ = ["feature_encoding", "text_preprocessing", "util"]
