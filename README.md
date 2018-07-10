@@ -1,5 +1,6 @@
 # ToolStack
 
+A set of tools for Mining Intelligence.
 
 Requirements
 ------------
