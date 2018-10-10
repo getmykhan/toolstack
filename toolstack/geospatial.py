@@ -26,7 +26,7 @@ def travel_time(origin, destination, key, mode = 'driving', distance=False):
     String / Tuple(If Distance if True)
 
     """
-    gm = googlemaps.Client(key=api_key)
+    gm = googlemaps.Client(key=key)
     try:
         commute = gm.distance_matrix(origin, destination, mode=mode)
         commute_time = commute['rows'][0]['elements'][0]['duration']['text']
