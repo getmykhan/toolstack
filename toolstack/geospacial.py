@@ -1,3 +1,7 @@
+import pandas as pd
+import numpy as np
+import googlemaps
+
 def travel_time(origin, destination, key, mode = 'driving', distance=False):
     """
     Calculates the travel time between two points
