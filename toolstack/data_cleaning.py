@@ -1,8 +1,7 @@
 import pandas as pd
 import numpy as np
-from numpy import percentile
 
-def remove_outliers(df, column, filter_type):
+def remove_outliers(df, column, strategy = 'IQR'):
     
     """ 
     Removes outliers from a numerical columns in a dataframe
@@ -13,7 +12,7 @@ def remove_outliers(df, column, filter_type):
         The df to perform case operation on.
     column : float
         The column selected should be present in the Dataframe passed
-    filter_type : string, default 'english'
+    strategy : string, default 'IQR'
         Options: 'standard_deviation', 'IQR'
 
     
@@ -40,7 +39,7 @@ def remove_outliers(df, column, filter_type):
                 i = i+1
                 
     if filter_type == 'IQR':
-        Quar25, Quar75 = percentile(values, 25), percentile(values, 75)
+        Quar25, Quar75 = np.percentile(values, 25), np.percentile(values, 75)
         IQR = Quar75 - Quar25
         limit = IQR * 1.5
         
