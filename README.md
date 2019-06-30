@@ -31,3 +31,4 @@ Usage
     >>> df = pd.read_csv('amazon-review-300.csv', header=-1)
     >>> ap = AutomatedTextPreprocessing(df, df.columns.tolist())
     >>> ap.stack()
+
