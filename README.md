@@ -24,12 +24,14 @@ Using PIP via PyPI
 Usage
 --------
 
-    >>> from toolstack.text import AutomatedTextPreprocessing
-    >>> import pandas as pd
-    >>> import numpy as np
+```python
+from toolstack.text import AutomatedTextPreprocessing
+import pandas as pd
 
-    >>> df = pd.read_csv('amazon-review-300.csv', header=-1)
-    >>> ap = AutomatedTextPreprocessing(df, df.columns.tolist())
-    >>> ap.stack()
+df = pd.read_csv('amazon-review-300.csv', header=-1)
+ap = AutomatedTextPreprocessing(df, df.columns.tolist())
+ap.stack()
+```
+
 
 
