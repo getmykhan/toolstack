@@ -34,4 +34,4 @@ def load_stopwords():
     Set
     """
 
-    return set(pd.read_csv('https://algs4.cs.princeton.edu/35applications/stopwords.txt', header=-1)[0].values.tolist())
+    return set(pd.read_csv('https://algs4.cs.princeton.edu/35applications/stopwords.txt', header=None)[0].values.tolist())
