@@ -2,6 +2,8 @@ import re
 import pandas as pd
 import numpy as np
 from collections import Counter
+from tqdm import tqdm
+tqdm.pandas()
 
 
 class TextPreprocessing:
@@ -10,7 +12,7 @@ class TextPreprocessing:
     """
 
     @staticmethod
-    def text_case(df, column, case='lower'):
+    def text_case(df, columns, case='lower', verbose=True):
         """
         Perform string manipulation to convert text to/from:
         1. Lower case
@@ -31,19 +33,33 @@ class TextPreprocessing:
         List
         """
         assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
-        assert column in df, "The column is not present in the DataFrame, pass a valid column name"
 
-        if case.lower() == 'lower':
-            return df[column].apply(lambda x: x.lower()).values.tolist()
-        elif case.lower() == 'upper':
-            return df[column].apply(lambda x: x.upper()).values.tolist()
-        elif case.lower() == 'capitalize':
-            return df[column].apply(lambda x: x.capitalize()).values.tolist()
-        else:
-            return df[column].values.tolist()
+        for column in columns:
+            assert column in df.columns, f"The column: <{column}> is not present in the DataFrame, pass a valid column name"
+
+        __cleaned_data__df = pd.DataFrame()
+
+        for column in columns:
+            if not verbose:
+                if case.lower() == 'lower':
+                    __cleaned_data__df[f'{column}'] = df[column].apply(lambda x: x.lower())
+                elif case.lower() == 'upper':
+                    __cleaned_data__df[f'{column}'] = df[column].apply(lambda x: x.upper())
+                elif case.lower() == 'capitalize':
+                    __cleaned_data__df[f'{column}'] = df[column].apply(lambda x: x.capitalize())
+
+            else:
+                if case.lower() == 'lower':
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(lambda x: x.lower())
+                elif case.lower() == 'upper':
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(lambda x: x.upper())
+                elif case.lower() == 'capitalize':
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(lambda x: x.capitalize())
+
+        return __cleaned_data__df
 
     @staticmethod
-    def remove_punctuations(df, column, regex=r'[^\w\s]', space=False):
+    def remove_punctuations(df, columns, regex=r'[^\w\s]', space=False, verbose=True):
         """
         Clean text, remove punctuations and symbols
 
@@ -51,7 +67,7 @@ class TextPreprocessing:
         ----------
         df : DataFrame
             The df to perform case operation on
-        column : string, int
+        columns : List
             The column on which the operation has to be performed
         regex : string, default r'[^\w\s]'
             Pass any regex to clean the text (punctuations) else leave default
@@ -63,15 +79,31 @@ class TextPreprocessing:
         List
         """
         assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
-        assert column in df, "The column is not present in the DataFrame, pass a valid column name"
+        for column in columns:
+            assert column in df.columns, f"The column: <{column}> is not present in the DataFrame, pass a valid column name"
 
-        if space:
-            return df[column].apply(lambda x: re.sub(regex, ' ', x)).values.tolist()
-        else:
-            return df[column].apply(lambda x: re.sub(regex, '', x)).values.tolist()
+        __cleaned_data__df = pd.DataFrame()
+
+        for column in columns:
+            if not verbose:
+                if space:
+                    __cleaned_data__df[f'{column}'] = df[column].apply(
+                        lambda x: re.sub(regex, ' ', x))
+                else:
+                    __cleaned_data__df[f'{column}'] = df[column].apply(
+                        lambda x: re.sub(regex, '', x))
+            else:
+                if space:
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                        lambda x: re.sub(regex, ' ', x))
+                else:
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                        lambda x: re.sub(regex, '', x))
+
+        return __cleaned_data__df
 
     @staticmethod
-    def remove_digits(df, column):
+    def remove_digits(df, columns, verbose=True):
         """
         Clean text, remove digits
 
@@ -85,11 +117,24 @@ class TextPreprocessing:
         -------
         List
         """
-        
-        return df[column].apply(lambda x: ' '.join([x for x in x.split() if not x.isdigit()])).values.tolist()
+        assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
+        for column in columns:
+            assert column in df.columns, f"The column: <{column}> is not present in the DataFrame, pass a valid column name"
+
+        __cleaned_data__df = pd.DataFrame()
+
+        for column in columns:
+            if not verbose:
+                __cleaned_data__df[f'{column}'] = df[column].apply(
+                    lambda x: ' '.join([x for x in x.split() if not x.isdigit()]))
+            else:
+                __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                    lambda x: ' '.join([x for x in x.split() if not x.isdigit()]))
+
+        return __cleaned_data__df
 
     @staticmethod
-    def remove_characters(df, column, char=2):
+    def remove_characters(df, columns, char=2, verbose=True):
         """
         Clean text, remove char
 
@@ -107,12 +152,23 @@ class TextPreprocessing:
         List
         """
         assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
-        assert column in df, "The column is not present in the DataFrame, pass a valid column name"
+        for column in columns:
+            assert column in df.columns, f"The column: <{column}> is not present in the DataFrame, pass a valid column name"
 
-        return df[column].apply(lambda x: ' '.join([x for x in x.split() if len(x.strip()) > char]))
+        __cleaned_data__df = pd.DataFrame()
+
+        for column in columns:
+            if not verbose:
+                __cleaned_data__df[f'{column}'] = df[column].apply(
+                    lambda x: ' '.join([x for x in x.split() if len(x.strip()) > char]))
+            else:
+                __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                    lambda x: ' '.join([x for x in x.split() if len(x.strip()) > char]))
+
+        return __cleaned_data__df
 
     @staticmethod
-    def remove_stopwords(df, column, **kwargs):
+    def remove_stopwords(df, columns, verbose=True, **kwargs):
         """
         Remove stopwords from a corpus
 
@@ -133,23 +189,30 @@ class TextPreprocessing:
 
         """
         assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
-        assert column in df, "The column is not present in the DataFrame, pass a valid column name"
+        for column in columns:
+            assert column in df.columns, f"The column: <{column}> is not present in the DataFrame, pass a valid column name"
         assert ('stopwords' in kwargs.keys() or isinstance(kwargs['stopwords'], list)), "Pass a list of 'stopwords'"
 
-        word_list = []
-        if 'text_lower' in kwargs.keys() and kwargs['text_lower']:
-            for x in np.array(df[column]):
-                x = x.split()
-                text = ' '.join([s.lower() for s in x if s.lower() not in set(kwargs['stopwords'])])
-                word_list.append(text)
-            return word_list
+        __cleaned_data__df = pd.DataFrame()
 
-        else:
-            for x in np.array(df[column]):
-                x = x.split()
-                text = ' '.join([s for s in x if s.lower() not in set(kwargs['stopwords'])])
-                word_list.append(text)
-            return word_list
+        for column in columns:
+            if not verbose:
+                if 'text_lower' in kwargs.keys() and kwargs['text_lower']:
+                    __cleaned_data__df[f'{column}'] = df[column].apply(
+                        lambda x: ' '.join([s.lower() for s in x.split() if s.lower() not in set(kwargs['stopwords'])]))
+                else:
+                    __cleaned_data__df[f'{column}'] = df[column].apply(
+                        lambda x: ' '.join([s for s in x.split() if s.lower() not in set(kwargs['stopwords'])]))
+            else:
+                if 'text_lower' in kwargs.keys() and kwargs['text_lower']:
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                        lambda x: ' '.join([s.lower() for s in x.split() if s.lower() not in set(kwargs['stopwords'])]))
+                else:
+                    __cleaned_data__df[f'{column}'] = df[column].progress_apply(
+                        lambda x: ' '.join([s for s in x.split() if s.lower() not in set(kwargs['stopwords'])]))
+
+        return __cleaned_data__df
+
 
 
 def word_count(df, column, sort='ascending', **kwargs):
@@ -219,25 +282,28 @@ class AutomatedTextPreprocessing(TextPreprocessing):
 
     """
 
-    def __init__(self, df, columns):
+    def __init__(self, df):
         assert isinstance(df, pd.DataFrame), "Pass a DataFrame"
-        assert isinstance(columns, list), "Columns has to a list of columns in the DataFrame passed"
-        for column in columns:
-            assert column in df, f"The column '{column}' is not present in the DataFrame, pass a valid column name"
 
         super(AutomatedTextPreprocessing, self).__init__()
         self.df = df.copy()
-        self.columns = columns
-        self.stopwords = set(pd.read_csv('https://algs4.cs.princeton.edu/35applications/stopwords.txt', header=-1)[0].values.tolist())
+        self.columns = [str(x) for x in self.df.columns]
+        self.df.columns = self.columns
+        self.stopwords = set(
+            pd.read_csv('https://algs4.cs.princeton.edu/35applications/stopwords.txt', header=None)[0].values.tolist()
+        )
         self.char = 2
+        self.df_cleaned = pd.DataFrame()
 
     def stack(self):
         for column in self.columns:
             if self.df[column].dtype == 'O':
-                self.df[column] = self.text_case(self.df, column)
-                self.df[column] = self.remove_punctuations(self.df, column)
-                self.df[column] = self.remove_digits(self.df, column)
-                self.df[column] = self.remove_characters(self.df, column, char=self.char)
-                self.df[column] = self.remove_stopwords(self.df, column, stopwords=list(self.stopwords))
+                self.df_cleaned[column] = self.text_case(self.df, [column])[column]
+                self.df_cleaned[column] = self.remove_punctuations(self.df_cleaned, [column])[column]
+                self.df_cleaned[column] = self.remove_digits(self.df_cleaned, [column])[column]
+                self.df_cleaned[column] = self.remove_characters(self.df_cleaned, [column], char=self.char)[column]
+                self.df_cleaned[column] = self.remove_stopwords(self.df_cleaned, [column], stopwords=list(self.stopwords))[column]
+            else:
+                self.df_cleaned[column] = self.df[column]
 
-        return self.df
+        return self.df_cleaned
